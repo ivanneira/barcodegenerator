@@ -16,7 +16,8 @@ if(isset($_GET['code'])) {
     generateBarcode($code);
 
 } else {
-    echo "error en la petición";
+    //echo "error en la petición";
+    generateBarcode("123");
 
 }
 
