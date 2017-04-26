@@ -41,7 +41,7 @@ imagecopyresized($im2, $im, 0, 0, 0, 0, $code_generated->lastX, $code_generated-
 $drawing->set_im($im2);
 
 // Header that says it is an image (remove it if you save the barcode to a file)
-//header('Content-Type: image/png');
+header('Content-Type: image/png');
 
 // Draw (or save) the image into PNG format.
 $drawing->finish(IMG_FORMAT_PNG);
