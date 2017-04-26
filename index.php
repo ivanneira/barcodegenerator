@@ -24,7 +24,7 @@ if(isset($_GET['code'])) {
 function generateBarcode($text){
 
     // The arguments are R, G, B for color.
-    $color_black = new BCGColor(0, 0, 255);
+    $color_black = new BCGColor(0, 0, 0);
     $color_white = new BCGColor(255, 255, 255);
 
     $drawException = null;
@@ -52,8 +52,8 @@ function generateBarcode($text){
     }
 
     // Header that says it is an image (remove it if you save the barcode to a file)
-    header('Content-Type: image/png');
-    header('Content-Disposition: inline; filename="barcode.png"');
+    //header('Content-Type: image/png');
+    //header('Content-Disposition: inline; filename="barcode.png"');
 
     // Draw (or save) the image into PNG format.
     $drawing->finish(BCGDrawing::IMG_FORMAT_PNG);
