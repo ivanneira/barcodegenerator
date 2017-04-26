@@ -52,7 +52,7 @@ function generateBarcode($text){
     }
 
     // Header that says it is an image (remove it if you save the barcode to a file)
-    //header('Content-Type: image/png');
+    header('Content-Type: image/png');
     //header('Content-Disposition: inline; filename="barcode.png"');
 
     // Draw (or save) the image into PNG format.
