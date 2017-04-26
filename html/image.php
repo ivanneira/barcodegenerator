@@ -1,97 +1,36 @@
 <?php
-define('IN_CB', true);
-include_once('include/function.php');
-
-function showError() {
-    header('Content-Type: image/png');
-    readfile('error.png');
-    exit;
+if(isset($_GET['code']) && isset($_GET['t']) && isset($_GET['r']) && isset($_GET['text']) && isset($_GET['f']) && isset($_GET['o']) && isset($_GET['a1']) && isset($_GET['a2'])){
+	define('IN_CB',true);
+	require('../class/index.php');
+	require('../class/FColor.php');
+	require('../class/BarCode.php');
+	require('../class/FDrawing.php');
+	if(include('../class/'.$_GET['code'].'.barcode.php')){
+		$color_black = new FColor(0,0,0);
+		$color_white = new FColor(255,255,255);
+		if(!empty($_GET['a2']))
+			$code_generated = new $_GET['code']($_GET['t'],$color_black,$color_white,$_GET['r'],$_GET['text'],$_GET['f'],$_GET['a1'],$_GET['a2']);
+		elseif(!empty($_GET['a1']))
+			$code_generated = new $_GET['code']($_GET['t'],$color_black,$color_white,$_GET['r'],$_GET['text'],$_GET['f'],$_GET['a1']);
+		else
+			$code_generated = new $_GET['code']($_GET['t'],$color_black,$color_white,$_GET['r'],$_GET['text'],$_GET['f']);
+		$drawing = new FDrawing(1024,1024,'',$color_white);
+		$drawing->init();
+		$drawing->add_barcode($code_generated);
+		$drawing->draw_all();
+		$im = $drawing->get_im();
+		$im2 = imagecreate($code_generated->lastX,$code_generated->lastY);
+		imagecopyresized($im2, $im, 0, 0, 0, 0, $code_generated->lastX, $code_generated->lastY, $code_generated->lastX, $code_generated->lastY);
+		$drawing->set_im($im2);
+		$drawing->finish($_GET['o']);
+	}
+	else{
+		header('Content: image/png');
+		readfile('error.png');
+	}
 }
-
-$requiredKeys = array('code', 'filetype', 'dpi', 'scale', 'rotation', 'font_family', 'font_size', 'text');
-
-// Check if everything is present in the request
-foreach ($requiredKeys as $key) {
-    if (!isset($_GET[$key])) {
-        showError();
-    }
+else{
+	header('Content: image/png');
+	readfile('error.png');
 }
-
-if (!preg_match('/^[A-Za-z0-9]+$/', $_GET['code'])) {
-    showError();
-}
-
-$code = $_GET['code'];
-
-// Check if the code is valid
-if (!file_exists('config' . DIRECTORY_SEPARATOR . $code . '.php')) {
-    showError();
-}
-
-include_once('config' . DIRECTORY_SEPARATOR . $code . '.php');
-
-$class_dir = '..' . DIRECTORY_SEPARATOR . 'class';
-require_once($class_dir . DIRECTORY_SEPARATOR . 'BCGColor.php');
-require_once($class_dir . DIRECTORY_SEPARATOR . 'BCGBarcode.php');
-require_once($class_dir . DIRECTORY_SEPARATOR . 'BCGDrawing.php');
-require_once($class_dir . DIRECTORY_SEPARATOR . 'BCGFontFile.php');
-
-if (!include_once($class_dir . DIRECTORY_SEPARATOR . $classFile)) {
-    showError();
-}
-
-include_once('config' . DIRECTORY_SEPARATOR . $baseClassFile);
-
-$filetypes = array('PNG' => BCGDrawing::IMG_FORMAT_PNG, 'JPEG' => BCGDrawing::IMG_FORMAT_JPEG, 'GIF' => BCGDrawing::IMG_FORMAT_GIF);
-
-$drawException = null;
-try {
-    $color_black = new BCGColor(0, 0, 0);
-    $color_white = new BCGColor(255, 255, 255);
-
-    $code_generated = new $className();
-
-    if (function_exists('baseCustomSetup')) {
-        baseCustomSetup($code_generated, $_GET);
-    }
-
-    if (function_exists('customSetup')) {
-        customSetup($code_generated, $_GET);
-    }
-
-    $code_generated->setScale(max(1, min(4, $_GET['scale'])));
-    $code_generated->setBackgroundColor($color_white);
-    $code_generated->setForegroundColor($color_black);
-
-    if ($_GET['text'] !== '') {
-        $text = convertText($_GET['text']);
-        $code_generated->parse($text);
-    }
-} catch(Exception $exception) {
-    $drawException = $exception;
-}
-
-$drawing = new BCGDrawing('', $color_white);
-if($drawException) {
-    $drawing->drawException($drawException);
-} else {
-    $drawing->setBarcode($code_generated);
-    $drawing->setRotationAngle($_GET['rotation']);
-    $drawing->setDPI($_GET['dpi'] === 'NULL' ? null : max(72, min(300, intval($_GET['dpi']))));
-    $drawing->draw();
-}
-
-switch ($_GET['filetype']) {
-    case 'PNG':
-        header('Content-Type: image/png');
-        break;
-    case 'JPEG':
-        header('Content-Type: image/jpeg');
-        break;
-    case 'GIF':
-        header('Content-Type: image/gif');
-        break;
-}
-
-$drawing->finish($filetypes[$_GET['filetype']]);
 ?>
