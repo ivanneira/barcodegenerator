@@ -24,5 +24,5 @@
 
 <script>
 
-    $.post("http://10.64.65.200:84/barcodegenerator/test.php").done(function(data){$("#test").html(data)});
+    $.post("http://10.64.65.200:84/barcodegenerator/test.php").done(function(data){$("#test").attr('src',data)});
 </script>
