@@ -53,7 +53,7 @@ function generateBarcode($text){
 
     // Header that says it is an image (remove it if you save the barcode to a file)
     header('Content-Type: image/png');
-    //header('Content-Disposition: inline; filename="barcode.png"');
+    header('Content-Disposition: inline; filename="barcode.png"');
 
     // Draw (or save) the image into PNG format.
     $drawing->finish(BCGDrawing::IMG_FORMAT_PNG);
@@ -62,23 +62,3 @@ function generateBarcode($text){
 }
 
 ?>
-
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-
-    <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-</head>
-<body>
-
-<img id="test"></img>
-</body>
-</html>
