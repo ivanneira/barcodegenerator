@@ -1,40 +1,56 @@
 <?php
+// Define variable to prevent hacking
+define('IN_CB',true);
+
+// Including all required classes
+require('class/index.php');
+require('class/FColor.php');
+require('class/BarCode.php');
+require('class/FDrawing.php');
+
+// including the barcode technology
+include('class/code39.barcode.php');
+
+// Creating some Color (arguments are R, G, B)
+$color_black = new FColor(0,0,0);
+$color_white = new FColor(255,255,255);
+
+if(isset($_GET['code'])){
+
+    $code = $_GET['code'];
+}else{
+
+    $code = "NO CODE";
+}
+
+/* Here is the list of the arguments:
+1 - Thickness
+2 - Color of bars
+3 - Color of spaces
+4 - Resolution
+5 - Text
+6 - Text Font (0-5) */
+$code_generated = new code39(30,$color_black,$color_white,2,$code,2);
+
+/* Here is the list of the arguments
+1 - Width
+2 - Height
+3 - Filename (empty : display on screen)
+4 - Background color */
+$drawing = new FDrawing(1024,1024,'',$color_white);
+$drawing->init(); // You must call this method to initialize the image
+$drawing->add_barcode($code_generated);
+$drawing->draw_all();
+$im = $drawing->get_im();
+
+// Next line create the little picture, the barcode is being copied inside
+$im2 = imagecreate($code_generated->lastX,$code_generated->lastY);
+imagecopyresized($im2, $im, 0, 0, 0, 0, $code_generated->lastX, $code_generated->lastY, $code_generated->lastX, $code_generated->lastY);
+$drawing->set_im($im2);
+
+// Header that says it is an image (remove it if you save the barcode to a file)
+header('Content-Type: image/png');
+
+// Draw (or save) the image into PNG format.
+$drawing->finish(IMG_FORMAT_PNG);
 ?>
-
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-
-    <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-</head>
-<body>
-
-<img src="http://10.64.65.200:84/barcodegenerator/test.php" alt="">
-
-</body>
-</html>
-
-<script>
-/*
-    //var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
-
-
-
-    $.post("http://10.64.65.200:84/barcodegenerator/test.php").done(function(data){
-        console.dir(data);
-
-        var image = Base64.decode(data)
-
-        $("#test").attr('src',image)
-    });
-    
-    */
-</script>
