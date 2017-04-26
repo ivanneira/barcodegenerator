@@ -24,7 +24,7 @@ if(isset($_GET['code'])) {
 function generateBarcode($text){
 
     // The arguments are R, G, B for color.
-    $color_black = new BCGColor(0, 0, 0);
+    $color_black = new BCGColor(0, 0, 255);
     $color_white = new BCGColor(255, 255, 255);
 
     $drawException = null;
