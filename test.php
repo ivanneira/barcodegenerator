@@ -22,7 +22,7 @@ $color_white = new FColor(255,255,255);
 4 - Resolution
 5 - Text
 6 - Text Font (0-5) */
-$code_generated = new code39(30,$color_black,$color_white,1,'HELLO',2);
+$code_generated = new code39(30,$color_black,$color_white,2,'HELLO',2);
 
 /* Here is the list of the arguments
 1 - Width
